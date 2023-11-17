@@ -4,8 +4,15 @@
 #include <string.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <sys/select.h>
+#include <sys/time.h>
 
 #include <serial_comm/serial_comm.h>
+
+#define TIMEOUT_S 5
+#define TIMEOUT_MS 0
+
+static int8_t _wait_for_data(int32_t fd, uint32_t timeout_s, uint32_t timeout_us);
 
 serial_comm_err_t serial_comm_init(const serial_config_t *config, int32_t *fd)
 {
@@ -58,8 +65,8 @@ serial_comm_err_t serial_comm_init(const serial_config_t *config, int32_t *fd)
     if (err == OK)
     {
         *fd = _fd;
+        printf("Serial communication initialized.\n");
     }
-
     return err;
 }
 
@@ -73,8 +80,13 @@ serial_comm_err_t serial_comm_send_serial(const char *msg, int32_t fd)
     serial_comm_err_t err = OK;
 
 #if defined(ESP32) || defined(ESP8266) || defined(OTHER)
-    // TODO:
-    printf("TODO:\n");
+
+    ssize_t bytes_written = write(fd, msg, strlen(msg));
+    if (bytes_written < 0)
+    {
+        fprintf(stderr, "Error when writing to a serial port.\n");
+        err = SEND_ERR;
+    }
 #elif MOCK
     FILE *file = fopen("esp32.txt", "w");
     if (file == NULL)
@@ -100,10 +112,30 @@ serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_si
 {
     serial_comm_err_t err = OK;
 #if defined(ESP32) || defined(ESP8266) || defined(OTHER)
-    // TODO:
-    printf("TODO:\n");
-    // size_t bytes_written = write()
+
+    uint8_t status = _wait_for_data(fd, TIMEOUT_S, TIMEOUT_MS);
+    if (status == 1)
+    {
+        fprintf(stderr, "An error has occured during the waiting for the data.\n");
+        err = RECEIVE_ERR;
+    }
+    else if (status == 0)
+    {
+        fprintf(stderr, "A timeout has occured, no data arrived.\n");
+        err = RECEIVE_ERR;
+    }
+    else
+    {
+        ssize_t bytes_read = read(fd, response, response_size);
+        if (bytes_read < 0)
+        {
+            fprintf(stderr, "Error has occured, no data read.\n");
+            err = RECEIVE_ERR;
+        }
+    }
+
 #elif MOCK
+
     FILE *file = fopen("esp32.txt", "r");
     if (file == NULL)
     {
@@ -112,6 +144,7 @@ serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_si
     }
     if (err == OK)
     {
+        usleep(10000);
         fseek(file, 0, SEEK_SET);
 
         fgets(response, response_size, file);
@@ -135,9 +168,6 @@ serial_comm_err_t serial_comm_send_command(const char *command, const char *expe
 
     err = serial_comm_send_serial(command, fd);
 
-    /* TODO: POLL FOR ANSWER INSTEAD OF SLEEPING */
-    usleep(10000);
-
     if (err == OK)
     {
         err = serial_comm_receive_serial(res, sizeof(res), fd);
@@ -155,4 +185,20 @@ serial_comm_err_t serial_comm_send_command(const char *command, const char *expe
     }
 
     return err;
+}
+
+static int8_t _wait_for_data(int32_t fd, uint32_t timeout_s, uint32_t timeout_us)
+{
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(fd, &fds);
+
+    struct timeval timeout;
+    timeout.tv_sec = timeout_s;
+    timeout.tv_usec = timeout_us;
+
+    // Wait for data on the file descriptor
+    int8_t result = select(fd + 1, &fds, NULL, NULL, &timeout);
+
+    return result;
 }
