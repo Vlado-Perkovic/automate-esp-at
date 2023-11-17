@@ -34,6 +34,7 @@ typedef struct
 struct _board_t
 {
     board_ops_t *ops;
+    int32_t fd;
 };
 
 /**

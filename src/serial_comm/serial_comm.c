@@ -65,10 +65,10 @@ serial_comm_err_t serial_comm_init(const serial_config_t *config, int32_t *fd)
 
 void serial_comm_close(int32_t fd)
 {
-    return;
+    close(fd);
 }
 
-serial_comm_err_t serial_comm_send_serial(const char *msg)
+serial_comm_err_t serial_comm_send_serial(const char *msg, int32_t fd)
 {
     serial_comm_err_t err = OK;
 
@@ -96,12 +96,13 @@ serial_comm_err_t serial_comm_send_serial(const char *msg)
     return err;
 }
 
-serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_size)
+serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_size, int32_t fd)
 {
     serial_comm_err_t err = OK;
 #if defined(ESP32) || defined(ESP8266) || defined(OTHER)
     // TODO:
     printf("TODO:\n");
+    // size_t bytes_written = write()
 #elif MOCK
     FILE *file = fopen("esp32.txt", "r");
     if (file == NULL)
@@ -126,20 +127,20 @@ serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_si
     return err;
 }
 
-serial_comm_err_t serial_comm_send_command(const char *command, const char *expected_response, char *response)
+serial_comm_err_t serial_comm_send_command(const char *command, const char *expected_response, char *response, int32_t fd)
 {
     serial_comm_err_t err = OK;
 
     char res[50];
 
-    err = serial_comm_send_serial(command);
+    err = serial_comm_send_serial(command, fd);
 
     /* TODO: POLL FOR ANSWER INSTEAD OF SLEEPING */
     usleep(10000);
 
     if (err == OK)
     {
-        err = serial_comm_receive_serial(res, sizeof(res));
+        err = serial_comm_receive_serial(res, sizeof(res), fd);
     }
 
     if ((err == OK) && (strstr(res, expected_response) == NULL))

@@ -89,38 +89,38 @@ board_err_t _board_set_transparent_mode_default(board_t *self)
 {
     serial_comm_err_t err = OK;
 
-    err = serial_comm_send_command("AT+CWMODE=1", "OK", NULL);
+    err = serial_comm_send_command("AT+CWMODE=1", "OK", NULL, self->fd);
 
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CWJAP=\"espressif\",\"1234567890\"", "OK", NULL);
+        err = serial_comm_send_command("AT+CWJAP=\"espressif\",\"1234567890\"", "OK", NULL, self->fd);
     }
 
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPMUX=1", "OK", NULL);
+        err = serial_comm_send_command("AT+CIPMUX=1", "OK", NULL, self->fd);
     }
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPSERVERMAXCONN=1", "OK", NULL);
+        err = serial_comm_send_command("AT+CIPSERVERMAXCONN=1", "OK", NULL, self->fd);
     }
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPSERVER=1,8080", "OK", NULL);
+        err = serial_comm_send_command("AT+CIPSERVER=1,8080", "OK", NULL, self->fd);
     }
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPSTA?", "OK", NULL); /* TODO: QUERY THE RESPONSE */
+        err = serial_comm_send_command("AT+CIPSTA?", "OK", NULL, self->fd); /* TODO: QUERY THE RESPONSE */
     }
     /* TODO: CONNECT THE PC TO THE INTERNET */
     /* TODO: WAIT FOR THE AT RESPONSE */
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPMODE=1", "OK", NULL);
+        err = serial_comm_send_command("AT+CIPMODE=1", "OK", NULL, self->fd);
     }
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPSEND", "OK", NULL);
+        err = serial_comm_send_command("AT+CIPSEND", "OK", NULL, self->fd);
     }
 
     if (err != OK)
@@ -138,11 +138,11 @@ board_err_t _board_exit_transparent_mode_default(board_t *self)
     serial_comm_err_t err = OK;
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPMODE=0", "OK", NULL);
+        err = serial_comm_send_command("AT+CIPMODE=0", "OK", NULL, self->fd);
     }
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPCLOSE", "OK", NULL);
+        err = serial_comm_send_command("AT+CIPCLOSE", "OK", NULL, self->fd);
     }
 
     if (err != OK)

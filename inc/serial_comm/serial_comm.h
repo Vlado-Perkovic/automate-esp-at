@@ -43,7 +43,7 @@ void serial_comm_close(int32_t fd);
  * @param msg string data
  * @return serial_comm_err_t status code
  */
-serial_comm_err_t serial_comm_send_serial(const char *msg);
+serial_comm_err_t serial_comm_send_serial(const char *msg, int32_t fd);
 
 /**
  * @brief function for receiving a string from the serial connection
@@ -51,7 +51,7 @@ serial_comm_err_t serial_comm_send_serial(const char *msg);
  * @param response string data
  * @return serial_comm_err_t status code
  */
-serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_size);
+serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_size, int32_t fd);
 
 /**
  * @brief function that querys the device on the serial connection and checks the response
@@ -60,6 +60,6 @@ serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_si
  * @param expected_response a string that is expected
  * @return serial_comm_err_t status code
  */
-serial_comm_err_t serial_comm_send_command(const char *command, const char *expected_response, char *response);
+serial_comm_err_t serial_comm_send_command(const char *command, const char *expected_response, char *response, int32_t fd);
 
 #endif // SERIAL_COMM_H
