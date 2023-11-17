@@ -14,12 +14,14 @@ int main()
 {
     board_t *board = utils_choose_board();
 
+#ifndef MOCK
     serial_config_t config = {.device_path = DEVICE_PATH,
                               .baud_rate = BAUD_RATE,
                               .data_bits = DATA_BITS,
                               .stop_bits = STOP_BITS};
 
     serial_comm_init(&config, &board->fd);
+#endif
 
     if (board_set_transparent_mode(board) != BOARD_OK)
     {
@@ -27,6 +29,9 @@ int main()
         fprintf(stderr, "Set transparent mode failed.\n");
         return -1;
     }
+
+    /* SEND DATA HERE */
+
     if (board_exit_transparent_mode(board) != BOARD_OK)
     {
 

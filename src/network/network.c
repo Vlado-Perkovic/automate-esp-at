@@ -11,14 +11,14 @@ network_err_t network_init_tcp(int32_t *sock_fd, const char *server_ip, uint32_t
 
     int32_t _sock_fd;
 
-    // Create a socket
+    /* create a socket */
     if ((_sock_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("socket");
         err = NETWORK_ERR;
     }
 
-    // Set up the server address struct
+    /* set up the server address struct */
     if (err == NETWORK_OK)
     {
         memset(&server_addr, 0, sizeof(server_addr));

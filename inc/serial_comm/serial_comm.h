@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define RESPONSE_SIZE 100
+
 typedef enum
 {
     OK = 0,

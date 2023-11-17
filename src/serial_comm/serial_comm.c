@@ -11,6 +11,7 @@
 
 #define TIMEOUT_S 5
 #define TIMEOUT_MS 0
+#define SLEEP_US 10000
 
 /**
  * @brief private function for awaiting the data from serial port
@@ -31,6 +32,7 @@ serial_comm_err_t serial_comm_init(const serial_config_t *config, int32_t *fd)
 
     serial_comm_err_t err = OK;
 
+    /* get the file descriptor */
     int32_t _fd = open(config->device_path, O_RDWR | O_NOCTTY);
     if (_fd < 0)
     {
@@ -49,11 +51,10 @@ serial_comm_err_t serial_comm_init(const serial_config_t *config, int32_t *fd)
         cfsetospeed(&tty, config->baud_rate);
         cfsetispeed(&tty, config->baud_rate);
 
+        /*Ignore modem control lines, enable reading */
         tty.c_cflag = (tty.c_cflag & ~CSIZE) | config->data_bits;
         tty.c_cflag |= CLOCAL | CREAD;
-        // Ignore modem control lines, enable reading
 
-        // Set stop bits
         switch (config->stop_bits)
         {
         case 1:
@@ -156,7 +157,7 @@ serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_si
     }
     if (err == OK)
     {
-        usleep(10000);
+        usleep(SLEEP_US);
         fseek(file, 0, SEEK_SET);
 
         fgets(response, response_size, file);
@@ -176,7 +177,7 @@ serial_comm_err_t serial_comm_send_command(const char *command, const char *expe
 {
     serial_comm_err_t err = OK;
 
-    char res[50];
+    char res[RESPONSE_SIZE];
 
     err = serial_comm_send_serial(command, fd);
 
@@ -210,7 +211,7 @@ static int8_t _wait_for_data(int32_t fd, uint32_t timeout_s, uint32_t timeout_us
     timeout.tv_sec = timeout_s;
     timeout.tv_usec = timeout_us;
 
-    // Wait for data on the file descriptor
+    /* Wait for data on the file descriptor */
     int8_t result = select(fd + 1, &fds, NULL, NULL, &timeout);
 
     return result;

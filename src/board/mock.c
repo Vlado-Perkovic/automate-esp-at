@@ -3,10 +3,6 @@
 
 #include <stdio.h>
 
-// #include <serial_comm/serial_comm.h>
-
-static void _board_mock_set_transparent_mode(board_t *self);
-
 // constructor
 board_mock_t *board_mock_new()
 {

@@ -4,11 +4,29 @@
 #include <utils/utils.h>
 #include <network/network.h>
 
-#define RESPONSE_SIZE 100
 #define CMD_SIZE 20
 
 /* private function prototypes */
+
+/**
+ * @brief a default method for setting up the transparent mode
+ *
+ * since the majority of the boards share this method, it made sense to assign a default
+ * method.
+ *
+ * @param self pointer to the board object
+ * @return board_err_t status code
+ */
 board_err_t _board_set_transparent_mode_default(board_t *self);
+
+/**
+ * @brief a default method for exiting the transparent mode
+ *
+ * same reasoning as above.
+ *
+ * @param self pointer to the board object
+ * @return board_err_t status code
+ */
 board_err_t _board_exit_transparent_mode_default(board_t *self);
 
 board_ops_t default_ops = {
@@ -29,6 +47,9 @@ board_err_t _board_init(board_t *self)
     }
 
     self->ops = &default_ops;
+    self->fd = -1;
+    self->sock_fd = -1;
+
     return BOARD_OK;
 }
 
@@ -92,6 +113,7 @@ board_err_t board_exit_transparent_mode(board_t *self)
 
 board_err_t _board_set_transparent_mode_default(board_t *self)
 {
+    /* https://docs.espressif.com/projects/esp-at/en/release-v2.4.0.0/esp32/AT_Command_Examples/TCP-IP_AT_Examples.html#uart-wi-fi-passthrough-transmission-when-the-esp32-works-as-a-tcp-server */
     serial_comm_err_t err = OK;
 
     err = serial_comm_send_command("AT+CWMODE=1", "OK", NULL, self->fd);

@@ -5,8 +5,6 @@
 
 #include <serial_comm/serial_comm.h>
 
-static void _board_esp32_set_transparent_mode(board_t *self);
-
 // constructor
 board_esp32_t *board_esp32_new()
 {
