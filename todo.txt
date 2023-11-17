@@ -24,11 +24,6 @@ ESP8266 -> drugacije je za most od ostalih
 - ima smisla imat razlicite boardove
 
 todo:
-- implementirat serijsku komunikaciju
-    - ostalo je jos dovrsit init i close
-    - funkcije za send i receive iz tog kanala
-    - umjesto sleep implementirat cekanje
-    - konfiguraciju za serijsku komunikaciju
 
 - implementirat povezivanje na internet za wifi passthrough
 

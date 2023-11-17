@@ -20,6 +20,14 @@ int main()
 
     serial_comm_init(&config, &board->fd);
 
+    // printf("%d\n", board->fd);
+
+    // serial_comm_send_serial("AT+GWR", board->fd);
+    // char response[100];
+    // serial_comm_receive_serial(response, 100, board->fd);
+
+    serial_comm_send_command("AT", "OK", NULL, board->fd);
+
     // if (board_set_transparent_mode(board) != BOARD_OK)
     // {
 

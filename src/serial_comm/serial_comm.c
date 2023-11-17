@@ -121,7 +121,7 @@ serial_comm_err_t serial_comm_receive_serial(char *response, uint8_t response_si
     }
     else if (status == 0)
     {
-        fprintf(stderr, "A timeout has occured, no data arrived.\n");
+        fprintf(stderr, "A timeout has occured, no response arrived.\n");
         err = RECEIVE_ERR;
     }
     else
