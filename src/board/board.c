@@ -121,6 +121,7 @@ board_err_t _board_set_transparent_mode_default(board_t *self)
     {
         err = serial_comm_send_command("AT+CIPSTA?", "OK", response, self->fd);
     }
+#ifndef MOCK
 
     utils_extract_ip_address(response, self->ip_address);
 
@@ -135,6 +136,7 @@ board_err_t _board_set_transparent_mode_default(board_t *self)
     {
         err = serial_comm_receive_serial(response, RESPONSE_SIZE, self->fd);
     }
+#endif
 
     if (err == OK)
     {
@@ -167,10 +169,12 @@ board_err_t _board_exit_transparent_mode_default(board_t *self)
         err = serial_comm_send_command("AT+CIPCLOSE", "OK", NULL, self->fd);
     }
 
+#ifndef MOCK
     if (network_close_tcp(self->sock_fd) != NETWORK_OK)
     {
         err = SEND_ERR;
     }
+#endif
 
     if (err != OK)
     {
