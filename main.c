@@ -31,6 +31,7 @@ int main()
     }
 
     /* SEND DATA HERE */
+    serial_comm_send_serial("Hello World!", board->fd);
 
     if (board_exit_transparent_mode(board) != BOARD_OK)
     {
