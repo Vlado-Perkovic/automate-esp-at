@@ -1,0 +1,36 @@
+kako izgleda koristenje programa:
+
+sa plocicom:
+cmake -DBOARD=<ime plocice> ..
+make
+./automate-esp-at 
+
+bez:
+cmake -DBOARD=MOCK ..
+make
+../esp32_mock.sh
+./automate-esp-at
+
+- gdje definirati config?
+
+radim li ja library ili application?
+
+- primarno application, znaci na run se pokrece postavljanje transparentnog mosta
+- config za serijsko spajanje moze biti vanjski file ili unutar cmakea
+- ima li smisla uopce imat vise boardova? svi rade isto osim jednog??
+ESP32-C2, ESP32-C3, ESP32-C6 -> sve isto?
+ESP32 -> isto je za ovaj zadatak al nedostaje funkcionalnosti
+ESP8266 -> drugacije je za most od ostalih
+- ima smisla imat razlicite boardove
+
+todo:
+- implementirat serijsku komunikaciju
+    - ostalo je jos dovrsit init i close
+    - funkcije za send i receive iz tog kanala
+    - umjesto sleep implementirat cekanje
+    - konfiguraciju za serijsku komunikaciju
+
+- implementirat povezivanje na internet za wifi passthrough
+
+- cmake varijable za konfiguraciju.
+
