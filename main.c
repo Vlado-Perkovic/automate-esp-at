@@ -3,6 +3,7 @@
 #include <board/mock.h>
 #include <utils/utils.h>
 #include <serial_comm/serial_comm.h>
+#include <network/network.h>
 
 #define DEVICE_PATH "/dev/ttyUSB0"
 #define BAUD_RATE 115200
@@ -20,26 +21,18 @@ int main()
 
     serial_comm_init(&config, &board->fd);
 
-    // printf("%d\n", board->fd);
+    if (board_set_transparent_mode(board) != BOARD_OK)
+    {
 
-    // serial_comm_send_serial("AT+GWR", board->fd);
-    // char response[100];
-    // serial_comm_receive_serial(response, 100, board->fd);
+        fprintf(stderr, "Set transparent mode failed.\n");
+        return -1;
+    }
+    if (board_exit_transparent_mode(board) != BOARD_OK)
+    {
 
-    serial_comm_send_command("AT", "OK", NULL, board->fd);
-
-    // if (board_set_transparent_mode(board) != BOARD_OK)
-    // {
-
-    //     fprintf(stderr, "Set transparent mode failed.\n");
-    //     return -1;
-    // }
-    // if (board_exit_transparent_mode(board) != BOARD_OK)
-    // {
-
-    //     fprintf(stderr, "Exit transparent mode failed.\n");
-    //     return -1;
-    // }
+        fprintf(stderr, "Exit transparent mode failed.\n");
+        return -1;
+    }
 
     serial_comm_close(board->fd);
     board_delete(board);

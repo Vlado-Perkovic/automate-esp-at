@@ -35,6 +35,7 @@ add_executable(automate-esp-at
     src/board/esp32.c
     src/board/mock.c
     src/utils/utils.c
+    src/network/network.c
     src/serial_comm/serial_comm.c
 )
 
@@ -43,6 +44,7 @@ target_include_directories(automate-esp-at PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/inc
     ${CMAKE_CURRENT_SOURCE_DIR}/src/board
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/network
     ${CMAKE_CURRENT_SOURCE_DIR}/src/serial_comm
 )
 

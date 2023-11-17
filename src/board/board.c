@@ -1,6 +1,11 @@
+#include <stdio.h>
 #include <board/board.h>
 #include <serial_comm/serial_comm.h>
-#include <stdio.h>
+#include <utils/utils.h>
+#include <network/network.h>
+
+#define RESPONSE_SIZE 100
+#define CMD_SIZE 20
 
 /* private function prototypes */
 board_err_t _board_set_transparent_mode_default(board_t *self);
@@ -106,14 +111,31 @@ board_err_t _board_set_transparent_mode_default(board_t *self)
     }
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPSERVER=1,8080", "OK", NULL, self->fd);
+        /* format the command based on the defined port */
+        char command[CMD_SIZE];
+        snprintf(command, sizeof(command), "AT+CIPSERVER=1,%d", SERVER_PORT);
+        err = serial_comm_send_command(command, "OK", NULL, self->fd);
     }
+    char response[RESPONSE_SIZE];
     if (err == OK)
     {
-        err = serial_comm_send_command("AT+CIPSTA?", "OK", NULL, self->fd); /* TODO: QUERY THE RESPONSE */
+        err = serial_comm_send_command("AT+CIPSTA?", "OK", response, self->fd);
     }
-    /* TODO: CONNECT THE PC TO THE INTERNET */
-    /* TODO: WAIT FOR THE AT RESPONSE */
+
+    utils_extract_ip_address(response, self->ip_address);
+
+    if (network_init_tcp(&self->sock_fd, self->ip_address, SERVER_PORT) != NETWORK_OK)
+    {
+        err = SEND_ERR;
+        fprintf(stderr, "TCP connection failed.\n");
+    }
+
+    /* important to wait for the connected signal */
+    if (err == OK)
+    {
+        err = serial_comm_receive_serial(response, RESPONSE_SIZE, self->fd);
+    }
+
     if (err == OK)
     {
         err = serial_comm_send_command("AT+CIPMODE=1", "OK", NULL, self->fd);
@@ -143,6 +165,11 @@ board_err_t _board_exit_transparent_mode_default(board_t *self)
     if (err == OK)
     {
         err = serial_comm_send_command("AT+CIPCLOSE", "OK", NULL, self->fd);
+    }
+
+    if (network_close_tcp(self->sock_fd) != NETWORK_OK)
+    {
+        err = SEND_ERR;
     }
 
     if (err != OK)

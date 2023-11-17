@@ -12,8 +12,20 @@
 #define TIMEOUT_S 5
 #define TIMEOUT_MS 0
 
+/**
+ * @brief private function for awaiting the data from serial port
+ *
+ * implemented with select
+ * timeout params are added so we can have sub second precision
+ *
+ * @param fd file descriptor id
+ * @param timeout_s timeout in seconds
+ * @param timeout_us timeout in microseconds
+ * @return int8_t status code
+ */
 static int8_t _wait_for_data(int32_t fd, uint32_t timeout_s, uint32_t timeout_us);
 
+/* public functions */
 serial_comm_err_t serial_comm_init(const serial_config_t *config, int32_t *fd)
 {
 
@@ -187,6 +199,7 @@ serial_comm_err_t serial_comm_send_command(const char *command, const char *expe
     return err;
 }
 
+/* private functions */
 static int8_t _wait_for_data(int32_t fd, uint32_t timeout_s, uint32_t timeout_us)
 {
     fd_set fds;

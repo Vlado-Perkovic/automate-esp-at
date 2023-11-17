@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#define IP_ADDRESS_SIZE 16
+
 typedef struct _board_t board_t;
 
 /**
@@ -35,6 +37,8 @@ struct _board_t
 {
     board_ops_t *ops;
     int32_t fd;
+    int32_t sock_fd;
+    char ip_address[IP_ADDRESS_SIZE];
 };
 
 /**

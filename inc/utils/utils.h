@@ -16,4 +16,6 @@
  */
 board_t *utils_choose_board();
 
+void utils_extract_ip_address(const char *response, char *ip_address);
+
 #endif // UTILS_H
